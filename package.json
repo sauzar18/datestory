@@ -1,0 +1,53 @@
+{
+  "name": "datestory",
+  "version": "1.0.0",
+  "description": "My priceless Nuxt.js project",
+  "author": "Kento Tsumuraya",
+  "private": true,
+  "scripts": {
+    "dev": "backpack dev",
+    "build": "nuxt build && backpack build",
+    "start": "cross-env NODE_ENV=production node build/main.js",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.4.1",
+    "@nuxtjs/pwa": "^3.0.0-beta.14",
+    "backpack-core": "^0.8.3",
+    "cross-env": "^5.2.0",
+    "express": "^4.16.4",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "csurf": "^1.9.0",
+    "express-session": "^1.15.6",
+    "moment": "^2.24.0",
+    "multer": "^1.4.1",
+    "mysql": "^2.16.0",
+    "nodemailer": "^5.1.1",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "whatwg-fetch": "^2.0.4",
+    "node-sass": "^4.11.0",
+    "nuxt": "^2.4.5",
+    "sass-loader": "^7.1.0",
+    "vue2-editor": "^2.6.6",
+    "wordpress-hash-node": "^1.0.0",
+    "xss": "^1.0.3"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config": "^0.0.1",
+    "babel-eslint": "^8.2.1",
+    "eslint": "^5.15.2",
+    "eslint-config-standard": ">=12.0.0",
+    "eslint-loader": "^2.1.2",
+    "eslint-plugin-import": ">=2.16.0",
+    "eslint-plugin-jest": ">=22.4.1",
+    "eslint-plugin-node": ">=8.0.1",
+    "eslint-plugin-nuxt": ">=0.4.3",
+    "eslint-plugin-promise": ">=4.0.1",
+    "eslint-plugin-standard": ">=4.0.0",
+    "eslint-plugin-vue": "^5.2.2",
+    "nodemon": "^1.18.10"
+  }
+}

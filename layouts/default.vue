@@ -1,0 +1,640 @@
+<template>
+  <div>
+    <nuxt />
+  </div>
+</template>
+
+<style lang="scss">
+$blue: #4ecca3;
+$deep: #232931;
+$yellow: #FFE867;
+$thin: #eeeeee;
+$light: #d1f4fa;
+$gray: #ddd;
+$indigo: #393e46;
+html {
+  font-family: 'Yu Gothic', '游ゴシック', YuGothic, '游ゴシック体',
+    'ヒラギノ角ゴ Pro W3', 'メイリオ', sans-serif;
+  font-size: 16px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+button {
+  border: none;
+  cursor: pointer;
+}
+.thin {
+  background-color: $thin;
+}
+@keyframes onAutoFillStart { from {} to {}}
+
+input:-webkit-autofill {
+  animation-name: onAutoFillStart;
+  transition: background-color 50000s ease-in-out 0s;
+}
+.st-half {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 26px;
+  .st-textfield,
+  .st-radiofield {
+    width: 48%;
+  }
+}
+.st-textfield.full {
+  margin-bottom: 26px;
+}
+.st-textfield {
+  width: 100%;
+  height: 56px;
+  border-bottom: 1px solid $deep;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: text;
+    line-height: 1.7;
+    order: -1;
+    padding: 5px 12px 0;
+    position: relative;
+    color: $deep;
+    height: 28px;
+    &::after {
+      content: '';
+      max-width: 0;
+      width: 100%;
+      height: 2px;
+      display: block;
+      position: absolute;
+      bottom: -28px;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      transition: 0.2s all;
+      background-color: $deep;
+    }
+  }
+  input:focus {
+    + label {
+      &::after {
+        max-width: 100%;
+      }
+    }
+  }
+  select,
+  input {
+    font-size: 14px;
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    color: $deep;
+    padding: 0 12px;
+    position: relative;
+    &:focus {
+      outline: none;
+    }
+  }
+  textarea {
+    font-size: 14px;
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    color: $deep;
+    padding: 0 12px;
+    position: relative;
+    height: 121px;
+    line-height: 1.3;
+    &:focus {
+      outline: none;
+      + label {
+        &::after {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+  &.area {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+    label {
+      &::after {
+        bottom: -122px;
+      }
+    }
+  }
+  &.active {
+    &::after {
+      max-width: 100%;
+    }
+  }
+  &.light {
+    &:hover {
+      background-color: rgb(188, 237, 244);
+    }
+    input {
+      &:hover {
+        background-color: rgb(188, 237, 244);
+      }
+    }
+  }
+}
+
+.st-selectfield {
+  width: 360px;
+  position: relative;
+  button {
+    width: 100%;
+    height: 56px;
+    border-bottom: 1px solid $deep;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    &::after {
+      content: '';
+      max-width: 0;
+      width: 100%;
+      height: 2px;
+      display: block;
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      transition: 0.2s all;
+      background-color: $deep;
+    }
+    &:focus {
+      &::after {
+        max-width: 100%;
+      }
+    }
+    &:hover {
+      background-color: rgb(188, 237, 244);
+    }
+    span {
+      max-width: 300px;
+      display: block;
+      padding: 0 12px;
+      text-align: left;
+      white-space: nowrap;
+      box-sizing: border-box;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+  p {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 12px 0;
+    position: relative;
+    line-height: 1.7;
+    color: $deep;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    span {
+      padding: 0;
+    }
+    &::after {
+      content: '';
+      max-width: 0;
+      height: 2px;
+      background-color: $deep;
+      position: absolute;
+      bottom: -32px;
+      display: block;
+      left: 0;
+    }
+  }
+  ul {
+    width: 100%;
+    display: none;
+    background-color: #fff;
+    z-index: 2;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+      0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      height: 48px;
+      padding: 0 16px;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+  ul.active {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    max-height: 400px;
+    z-index: 2;
+    + .st-close {
+      position: fixed;
+      display: block;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+.st-filebox {
+  width: 360px;
+  position: relative;
+  button {
+    width: 100%;
+    height: 56px;
+    border-bottom: 1px solid $deep;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    &::after {
+      content: '';
+      max-width: 0;
+      width: 100%;
+      height: 2px;
+      display: block;
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      transition: 0.2s all;
+      background-color: $deep;
+    }
+    &:focus {
+      &::after {
+        max-width: 100%;
+      }
+    }
+    &:hover {
+      background-color: rgb(188, 237, 244);
+    }
+    span {
+      max-width: 300px;
+      display: block;
+      padding: 0 12px;
+      text-align: left;
+      white-space: nowrap;
+      box-sizing: border-box;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+  p {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 12px 0;
+    position: relative;
+    line-height: 1.7;
+    color: $deep;
+    text-align: left;
+    &::after {
+      content: '';
+      max-width: 0;
+      height: 2px;
+      background-color: $deep;
+      position: absolute;
+      bottom: -32px;
+      display: block;
+      left: 0;
+    }
+  }
+  ul {
+    width: 100%;
+    display: none;
+    background-color: #fff;
+    z-index: 2;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+      0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    li {
+      width: 100px;
+      height: 100px;
+      padding: 8px;
+      box-sizing: content-box;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+  ul.active {
+    display: flex;
+    position: fixed;
+    margin: auto;
+    padding: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 80%;
+    overflow: auto;
+    max-height: 400px;
+    z-index: 4;
+    flex-wrap: wrap;
+    background-color: $gray;
+    + .st-close {
+      position: fixed;
+      display: block;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      z-index: 3;
+    }
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  input:checked {
+    + img,
+    + video {
+      opacity: 0.6;
+    }
+  }
+}
+.st-radiofield {
+  width: 360px;
+  position: relative;
+  height: 56px;
+  border-bottom: 1px solid $deep;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  dt {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: text;
+    padding: 5px 12px 0;
+    position: relative;
+    color: $deep;
+    &::after {
+      content: '';
+      max-width: 0;
+      height: 2px;
+      background-color: $deep;
+      position: absolute;
+      bottom: -32px;
+      display: block;
+      left: 0;
+    }
+  }
+  dd {
+    display: flex;
+    padding: 0 12px;
+  }
+  label {
+    display: inline-flex;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+}
+.st-radio {
+  dd {
+    justify-content: flex-start;
+  }
+  label {
+    margin-right: 16px;
+    cursor: pointer;
+    display: flex;
+  }
+  span {
+    position: relative;
+    display: flex;
+    line-height: 1.5;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  span::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid $indigo;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  input[type='radio']:focus {
+    + span {
+      &::before {
+        box-shadow: $indigo 0 0 5px;
+      }
+    }
+  }
+  input[type='radio']:checked {
+    + span::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $indigo;
+      top: 8px;
+      left: 4px;
+      position: absolute;
+    }
+  }
+}
+.st-checkbox {
+  cursor: pointer;
+  span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.5;
+    position: relative;
+    transition: 0.2s all;
+    color: $indigo;
+    &::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid $indigo;
+      display: inline-flex;
+      box-sizing: border-box;
+      border-radius: 2px;
+      margin-right: 4px;
+      transition: 0.2s all;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      transition: 0.2s all;
+    }
+  }
+  input[type='checkbox']:focus {
+    + span {
+      &::before {
+        box-shadow: $indigo 0 0 5px;
+      }
+    }
+  }
+  input[type='checkbox']:checked {
+    + span {
+      &::before {
+        background-color: $indigo;
+      }
+      &::after {
+        top: 5px;
+        left: 1px;
+        width: 6px;
+        height: 11px;
+        border-top: 2px solid transparent;
+        border-left: 2px solid transparent;
+        border-right: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        -webkit-transform: rotateZ(37deg);
+        transform: rotateZ(37deg);
+        -webkit-transform-origin: 100% 100%;
+        transform-origin: 100% 100%;
+      }
+    }
+  }
+}
+input[type='radio'],
+input[type='checkbox'] {
+  appearance: none;
+  background-color: transparent;
+  border-bottom: 0;
+  width: auto;
+  height: auto;
+  filter: alpha(opacity=0);
+  -moz-opacity:0;
+  opacity:0;
+  position: absolute;
+}
+.st-article {
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  > div {
+    display: flex;
+  }
+  h3,
+  h4 {
+    font-size: 18px;
+    max-height: 60px;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+  }
+  video {
+    background-color: #B8B8B8;
+    border-radius: 2px 2px 0 0;
+    width: 100%;
+    height: 100%;
+    order: -1;
+    overflow: hidden;
+    position: relative;
+    object-fit: cover;
+    height: 290px;
+  }
+  figure {
+    background-color: #B8B8B8;
+    border-radius: 2px 2px 0 0;
+    width: 100%;
+    height: 290px;
+    order: -1;
+    overflow: hidden;
+    position: relative;
+    &::before {
+      content: "";
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: rgba(0,0,0,0);
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: 0.3s all;
+    }
+  }
+  header {
+    display: flex;
+    flex-direction: column;
+  }
+  footer {
+    position: relative;
+    width: 100%;
+    padding: 0 20px 10px;
+    border-top: 1px solid #efefef;
+  }
+  a {
+    color: #000;
+    &:hover,
+    &:focus {
+      h4,
+      h3 {
+        color: $blue;
+      }
+      figure {
+        &::before {
+          transition: 0.3s all;
+          background-color: rgba(0,0,0,0.5);
+        }
+        img {
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+}
+</style>
