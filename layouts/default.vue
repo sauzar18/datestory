@@ -42,6 +42,9 @@ button {
   border: none;
   cursor: pointer;
 }
+.text-green {
+  color: $blue;
+}
 .thin {
   background-color: $thin;
 }

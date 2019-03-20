@@ -105,19 +105,21 @@ function _interopDefault(e){return e&&"object"==typeof e&&"default"in e?e.defaul
 /*!************************!*\
   !*** ./nuxt.config.js ***!
   \************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ({
+// eslint-disable-next-line nuxt/no-cjs-in-config
+const pkg = __webpack_require__(/*! ./package */ "./package.json"); // eslint-disable-next-line nuxt/no-cjs-in-config
+
+
+module.exports = {
   mode: 'universal',
 
   /*
-  ** Headers of the page
-  */
+   ** Headers of the page
+   */
   head: {
-    title: 'datestory',
+    title: pkg.name,
     meta: [{
       charset: 'utf-8'
     }, {
@@ -126,7 +128,7 @@ __webpack_require__.r(__webpack_exports__);
     }, {
       hid: 'description',
       name: 'description',
-      content: 'datestory'
+      content: pkg.description
     }],
     link: [{
       rel: 'icon',
@@ -136,59 +138,44 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  ** Customize the progress-bar color
-  */
+   ** Customize the progress-bar color
+   */
   loading: {
     color: '#fff'
   },
 
   /*
-  ** Global CSS
-  */
+   ** Global CSS
+   */
   css: [],
 
   /*
-  ** Plugins to load before mounting the App
-  */
-  plugins: [{
-    src: '~plugins/quill.js',
-    ssr: false
-  }],
+   ** Plugins to load before mounting the App
+   */
+  plugins: [],
 
   /*
-  ** Nuxt.js modules
-  */
+   ** Nuxt.js modules
+   */
   modules: [// Doc: https://axios.nuxtjs.org/usage
-  '@nuxtjs/axios', '@nuxtjs/pwa'],
+  '@nuxtjs/axios'],
 
   /*
-  ** Axios module configuration
-  */
-  axios: {
-    // baseURL: 'https://medee.jp/',
-    credentials: false,
-    browserBaseURL: process.env.BASE_APP_URL || '/',
-    requestInterceptor: (config, {
-      store
-    }) => {
-      if (store.state.csrfToken) {
-        config.headers.common['x-csrf-token'] = 'Bearer ' + store.state.csrfToken;
-      }
-
-      return config;
-    }
+   ** Axios module configuration
+   */
+  axios: {// See https://github.com/nuxt-community/axios-module#options
   },
 
   /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   build: {
     /*
-    ** You can extend webpack config here
-    */
+     ** You can extend webpack config here
+     */
     extend(config, ctx) {
       // Run ESLint on save
-      if (ctx.isDev && ctx.isClient) {
+      if (process.server && process.browser) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -199,7 +186,18 @@ __webpack_require__.r(__webpack_exports__);
     }
 
   }
-});
+};
+
+/***/ }),
+
+/***/ "./package.json":
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+/*! exports provided: name, version, description, author, private, scripts, dependencies, devDependencies, default */
+/***/ (function(module) {
+
+module.exports = {"name":"datestory","version":"1.0.0","description":"My priceless Nuxt.js project","author":"Kento Tsumuraya","private":true,"scripts":{"dev":"backpack dev","build":"nuxt build && backpack build","start":"cross-env NODE_ENV=production node build/main.js","generate":"nuxt generate","lint":"eslint --ext .js,.vue --ignore-path .gitignore .","precommit":"npm run lint"},"dependencies":{"@nuxtjs/axios":"^5.4.1","backpack-core":"^0.8.3","cross-env":"^5.2.0","express":"^4.16.4","body-parser":"^1.18.3","cookie-parser":"^1.4.4","csurf":"^1.9.0","express-session":"^1.15.6","moment":"^2.24.0","multer":"^1.4.1","mysql":"^2.16.0","nodemailer":"^5.1.1","nodemailer-smtp-transport":"^2.7.4","whatwg-fetch":"^2.0.4","node-sass":"^4.11.0","nuxt":"^2.4.5","sass-loader":"^7.1.0","wordpress-hash-node":"^1.0.0","xss":"^1.0.3"},"devDependencies":{"@nuxtjs/eslint-config":"^0.0.1","babel-eslint":"^8.2.1","eslint":"^5.15.3","eslint-config-standard":">=12.0.0","eslint-loader":"^2.1.2","eslint-plugin-import":">=2.16.0","eslint-plugin-jest":">=22.4.1","eslint-plugin-node":">=8.0.1","eslint-plugin-nuxt":">=0.4.3","eslint-plugin-promise":">=4.0.1","eslint-plugin-standard":">=4.0.0","eslint-plugin-vue":"^5.2.2","nodemon":"^1.18.10"}};
 
 /***/ }),
 
@@ -245,13 +243,15 @@ __webpack_require__.r(__webpack_exports__);
 
 const router = Object(express__WEBPACK_IMPORTED_MODULE_0__["Router"])();
 router.post('/posts', (req, res, next) => {
-  const title = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.column_title);
-  const content = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.column_content);
-  const thumbnail = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_thumbnail);
-  const category = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.column_category);
+  const title = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_title);
+  const content = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_content);
+  const postName = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_name);
+  const location = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_location);
+  const category = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_category);
+  const thumbnail = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.thumbnail);
   const Type = xss__WEBPACK_IMPORTED_MODULE_1___default()(req.body.post_status);
   const createdAt = moment__WEBPACK_IMPORTED_MODULE_2___default()().format('YYYY-MM-DD HH:mm:ss');
-  const postQuery = `INSERT INTO date_posts (title, content, category, thumbnail, post_status, post_date) VALUES('${title}', '${content}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`;
+  const postQuery = `INSERT INTO date_posts (title, author, content, location, category, thumbnail, post_status, post_date) VALUES('${title}', '${postName}', '${content}', '${location}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`;
   _mysqlConnect__WEBPACK_IMPORTED_MODULE_3__["default"].query(postQuery, function (err, rows) {
     if (err) {
       // eslint-disable-next-line no-console

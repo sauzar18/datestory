@@ -1,10 +1,47 @@
 <template>
   <div>
-    <app-header/>
+    <app-header />
     <main>
       <div class="st-column">
         <section class="st-column__left">
           <h2>記事一覧</h2>
+          <ul>
+            <li
+              v-for="post in posts"
+              :key="post.id"
+            >
+              <n-link
+                :to="`/posts/${post.id}`"
+                class="st-column__article"
+              >
+                <article>
+                  <div class="st-article__header">
+                    <h3 class="text-green">{{ post.title }}</h3>
+                    <p><em>{{ post.location }}</em></p>
+                    <p>{{ post.content | replaceName }}</p>
+                    <div class="st-article__footer">
+                      <dl>
+                        <dt>投稿者</dt>
+                        <dd>{{ post.author }}</dd>
+                      </dl>
+                      <time :datetime="post.post_date">
+                        {{ post.post_date | moment }}
+                      </time>
+                    </div>
+                  </div>
+                  <figure>
+                    <img
+                      :src="post.thumbnail"
+                      :alt="post.title"
+                    >
+                    <figcaption>
+                      {{ post.category }}
+                    </figcaption>
+                  </figure>
+                </article>
+              </n-link>
+            </li>
+          </ul>
         </section>
         <section class="st-column__right">
           <h2>新着記事</h2>
@@ -14,8 +51,13 @@
           class="st-modal"
         >
           <section class="st-modal__left">
-            <h2>記事作成</h2>
-            <form action="/api/posts">
+            <form action="/api/posts" method="POST">
+              <div class="st-title">
+                <h2>記事作成</h2>
+                <button type="submit">
+                  投稿
+                </button>
+              </div>
               <input
                 :value="$store.state.csrfToken"
                 type="hidden"
@@ -27,6 +69,8 @@
                   v-model="post_title"
                   type="text"
                   name="post_title"
+                  required
+                  aria-required="true"
                 >
                 <label for="title">タイトル</label>
               </div>
@@ -36,6 +80,8 @@
                   v-model="post_name"
                   type="text"
                   name="post_name"
+                  required
+                  aria-required="true"
                 >
                 <label for="post_name">投稿者名</label>
               </div>
@@ -91,24 +137,21 @@
                   </dd>
                 </dl>
               </div>
-              <input
-                :value="content"
-                name="column_content"
-                type="hidden"
-              >
-              <no-ssr placeholder="Loading Your Editor...">
-                <vue-editor
-                  id="editor"
-                  v-model="content"
-                  @imageAdded="handleImageAdded"
-                />
-              </no-ssr>
+              <div class="st-textfield">
+                <input
+                  v-model="process_title01"
+                  name="process_title01"
+                  type="text"
+                >
+              </div>
             </form>
           </section>
           <section class="st-modal__right">
             <h2>プレビュー</h2>
             <section class="st-post__preview">
-              <h3 class="title">{{ post_title }}</h3>
+              <h3 class="title">
+                {{ post_title }}
+              </h3>
               <div
                 v-if="post_title"
                 class="st-post__author"
@@ -129,9 +172,14 @@
                 v-if="post_location || post_category"
                 class="category"
               >
-                <li v-if="post_location">{{ post_location }}</li>
-                <li v-if="post_category">{{ post_category }}</li>
+                <li v-if="post_location">
+                  {{ post_location }}
+                </li>
+                <li v-if="post_category">
+                  {{ post_category }}
+                </li>
               </ul>
+              <div v-html="content" />
             </section>
           </section>
         </div>
@@ -158,20 +206,6 @@ export default {
   components: {
     AppHeader
   },
-  async asyncData ({ app, store, params }) {
-    /* 
-    let page
-    if (await app.context.query['page']) {
-      page = await app.context.query['page']
-    } else {
-      page = 1
-    }
-    let start = 20 * ( page - 1 )
-    const data = await app.$axios.$get(`/api/post_columns/${start}`)
-    return { posts: data }
-    */
-  },
-  watchQuery: ['page'],
   filters: {
     moment(date) {
       return moment(date).format('YYYY年MM月DD日')
@@ -180,10 +214,10 @@ export default {
       return moment(date).format('YYYY-MM-DD')
     },
     replaceName(data) {
-      return data.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'').substr(0, 50)
+      return data.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '').substr(0, 50)
     }
   },
-  data () {
+  data() {
     return {
       allPost: 0,
       errors: '',
@@ -197,18 +231,38 @@ export default {
       post_category: '',
       content: '',
       uploadFile: '',
-      filepath: ''
+      filepath: '',
+      process_title01: ''
     }
   },
-  head () {
+  computed: {
+    count() {
+      const pages = this.allPost / 20
+      if (pages > 1 && pages < 2) return 2
+      else return Math.floor(pages)
+    }
+  },
+  async asyncData({ app, store, params }) {
+    let page
+    if (await app.context.query['page']) {
+      page = await app.context.query['page']
+    } else {
+      page = 1
+    }
+    const start = 20 * (page - 1)
+    const data = await app.$axios.$get(`/api/post_columns/${start}`)
+    return { posts: data }
+  },
+  watchQuery: ['page'],
+  head() {
     return {
       title: this.title,
       meta: [
         { hid: 'description', name: 'description', content: this.description },
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: this.title},
-        { property: 'og:description', content: this.description},
-        { property: 'og:url', content: 'https://medee.jp/column'},
+        { property: 'og:title', content: this.title },
+        { property: 'og:description', content: this.description },
+        { property: 'og:url', content: 'https://medee.jp/column' },
         { property: 'og:image', content: 'https://medee.jp/images/ogp.png' },
         { name: 'twitter:title', content: this.title },
         { name: 'twitter:card', content: 'summary' },
@@ -220,23 +274,13 @@ export default {
       ]
     }
   },
-  computed: {
-    count () {
-      let pages = this.allPost / 20
-      if (pages > 1 && pages < 2) {
-        return 2
-      } else {
-        return Math.floor(pages)
-      }
-    }
-  },
   methods: {
-    handleImageAdded (file, Editor, cursorLocation, resetUploader) {
-      const formData = new FormData();
+    handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+      const formData = new FormData()
       this.filepath = '/upload/' + file.name
       formData.set('fileupload', this.filepath)
       formData.append('column_figure', file)
-      let config = {
+      const config = {
         headers: {
           'content-type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.csrfToken,
@@ -245,16 +289,17 @@ export default {
       }
       this.$axios.$post('/api/admin_fileupload_column', formData, config)
         .then((result) => {
-          Editor.insertEmbed(cursorLocation, 'image', this.filepath2);
-          Editor.formatText(cursorLocation, cursorLocation + 1, 'alt', 'コラム画像' )
-          resetUploader();
+          Editor.insertEmbed(cursorLocation, 'image', this.filepath2)
+          Editor.formatText(cursorLocation, cursorLocation + 1, 'alt', 'コラム画像')
+          resetUploader()
         })
         .catch((err) => {
-          console.log(err)
-          Editor.insertEmbed(cursorLocation, 'image', this.filepath2);
-          Editor.formatText(cursorLocation, cursorLocation + 1, 'alt', 'コラム画像' )
-          resetUploader();
-        })      
+          if (!err) {
+            Editor.insertEmbed(cursorLocation, 'image', this.filepath2)
+            Editor.formatText(cursorLocation, cursorLocation + 1, 'alt', 'コラム画像')
+            resetUploader()
+          }
+        })
     }
   }
 }
@@ -296,6 +341,7 @@ h2 {
   }
   article {
     display: flex;
+    width: 100%;
   }
   figure {
     width: 120px;
@@ -319,9 +365,6 @@ h2 {
     color: #fff;
     padding: 2px 6px;
   }
-  h3 {
-    color: $deep;
-  }
   div {
     color: #000;
     word-break: break-all;
@@ -330,6 +373,27 @@ h2 {
     font-size: 12px;
     color: rgb(148, 148, 148);
   }
+  dl {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: rgb(148, 148, 148);
+  }
+  dt {
+    margin-right: 8px;
+  }
+  em {
+    font-style: normal;
+    font-size: 14px;
+  }
+}
+.st-article__header {
+  width: 100%;
+}
+.st-article__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .st-pagenation {
   width: 100%;

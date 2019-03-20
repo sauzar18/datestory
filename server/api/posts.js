@@ -6,13 +6,15 @@ import connection from '../mysqlConnect'
 
 const router = Router()
 router.post('/posts', (req, res, next) => {
-  const title = xss(req.body.column_title)
-  const content = xss(req.body.column_content)
-  const thumbnail = xss(req.body.post_thumbnail)
-  const category = xss(req.body.column_category)
+  const title = xss(req.body.post_title)
+  const content = xss(req.body.post_content)
+  const postName = xss(req.body.post_name)
+  const location = xss(req.body.post_location)
+  const category = xss(req.body.post_category)
+  const thumbnail = xss(req.body.thumbnail)
   const Type = xss(req.body.post_status)
   const createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
-  const postQuery = `INSERT INTO date_posts (title, content, category, thumbnail, post_status, post_date) VALUES('${title}', '${content}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`
+  const postQuery = `INSERT INTO date_posts (title, author, content, location, category, thumbnail, post_status, post_date) VALUES('${title}', '${postName}', '${content}', '${location}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`
   connection.query(postQuery, function (err, rows) {
     if (err) {
       // eslint-disable-next-line no-console
