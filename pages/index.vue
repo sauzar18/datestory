@@ -137,13 +137,19 @@
                   </dd>
                 </dl>
               </div>
-              <div class="st-textfield">
-                <input
-                  v-model="process_title01"
-                  name="process_title01"
-                  type="text"
-                >
-              </div>
+              <input
+                :value="content"
+                name="post_content"
+                type="hidden"
+              >
+              <no-ssr placeholder="Loading Your Editor...">
+                <vue-editor
+                  id="editor"
+                  v-model="content"
+                  @imageAdded="handleImageAdded"
+                  :editorToolbar="customToolbar"
+                />
+              </no-ssr>
             </form>
           </section>
           <section class="st-modal__right">
@@ -179,7 +185,10 @@
                   {{ post_category }}
                 </li>
               </ul>
-              <div v-html="content" />
+              <div
+                v-html="content"
+                class="st-article__content"
+              />
             </section>
           </section>
         </div>
@@ -232,7 +241,13 @@ export default {
       content: '',
       uploadFile: '',
       filepath: '',
-      process_title01: ''
+      process_title01: '',
+      customToolbar: [
+        [{ 'header': [false, 3, 4, 5, 6, ] }],
+        ['bold', 'italic', 'underline'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['image', 'code-block']
+      ]
     }
   },
   computed: {
@@ -319,6 +334,23 @@ h2 {
   font-size: 18px;
   border-bottom: 2px solid $deep;
   margin-bottom: 20px;
+}
+.st-title {
+  display: flex;
+  border-bottom: 2px solid $deep;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  h2 {
+    border: none;
+    margin-bottom: 0;
+  }
+  button {
+    width: 80px;
+    height: 36px;
+    border-radius: 2px 2px 0 0;
+    background-color: $blue;
+    color: #fff;
+  }
 }
 .st-column__left {
   width: 620px;

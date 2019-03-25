@@ -5,11 +5,15 @@ Vue.use(Vuex)
 
 export const state = () => ({
   authUser: null,
-  csrfToken: null
+  csrfToken: null,
+  article: null
 })
 export const mutations = {
   SET_CSRF_TOKEN(state, csrfToken) {
     state.csrfToken = csrfToken
+  },
+  setArticle(state, data) {
+    state.article = data
   }
 }
 export const actions = {

@@ -39,4 +39,19 @@ router.get('/post_columns/:offset', (req, res, next) => {
     }
   })
 })
+router.get('/get_column/:id', (req, res, next) => {
+  const slugQuery = req.params.id
+  const clientQuery = `SELECT * FROM date_posts WHERE id = "${slugQuery}"`
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
 export default router
