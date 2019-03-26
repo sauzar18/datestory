@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export const state = () => ({
   authUser: null,
   csrfToken: null,
-  article: null
+  article: null,
+  register: []
 })
 export const mutations = {
   SET_CSRF_TOKEN(state, csrfToken) {
@@ -14,6 +15,9 @@ export const mutations = {
   },
   setArticle(state, data) {
     state.article = data
+  },
+  setRegister: function (state, data) {
+    state.register = data
   }
 }
 export const actions = {
@@ -24,5 +28,27 @@ export const actions = {
     if (req.cookies) {
       commit('SET_CSRF_TOKEN', req.csrfToken())
     }
+  },
+  register({ commit }, { userid, name, email, password, permission, _csrf }) {
+    return fetch('/api/register', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + _csrf,
+        'X-CSRF-TOKEN': _csrf
+      },
+      body: JSON.stringify({ userid, name, email, password, permission, _csrf })
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          throw new Error('既にメールアドレスが登録されています')
+        } else {
+          return res.json()
+        }
+      })
+      .then((register) => {
+        commit('setRegister', register)
+      })
   }
 }
