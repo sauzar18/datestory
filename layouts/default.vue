@@ -48,6 +48,27 @@ button {
 .thin {
   background-color: $thin;
 }
+.deep {
+  background-color: $deep;
+  color: #fff;
+}
+.gray {
+  background-color: $gray;
+}
+a.deep,
+button.deep {
+  &:hover,
+  &:focus {
+    background-color: #394049;
+  }
+}
+a.gray,
+button.gray {
+  &:hover,
+  &:focus {
+    background-color: #d4d8d8;
+  }
+}
 @keyframes onAutoFillStart { from {} to {}}
 
 input:-webkit-autofill {
@@ -164,7 +185,22 @@ input:-webkit-autofill {
     }
   }
 }
-
+.st-textfield.disabled,
+.st-textfield.readonly {
+  background-color: #EFEFEF;
+  &:hover,
+  input:hover {
+    background-color: #efefef;
+  }
+}
+.st-textfield.readonly {
+  border-bottom: 1px solid #30D841;
+  label {
+    &::after {
+      background-color: #30D841;
+    }
+  }
+}
 .st-selectfield {
   width: 360px;
   position: relative;

@@ -206,14 +206,17 @@
         </button>
       </nav>
     </main>
+    <app-footer />
   </div>
 </template>
 <script>
 import AppHeader from '~/components/Header.vue'
+import AppFooter from '~/components/Footer.vue'
 import moment from 'moment'
 export default {
   components: {
-    AppHeader
+    AppHeader,
+    AppFooter
   },
   filters: {
     moment(date) {
