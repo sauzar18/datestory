@@ -306,6 +306,80 @@ input:-webkit-autofill {
     }
   }
 }
+input[type="file"] {
+  display: none;
+}
+.st-filefield {
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin-bottom: 20px;
+  border-bottom: 1px solid $deep;
+  padding-bottom: 8px;
+  > label {
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.7;
+    padding: 5px 12px 0;
+    position: relative;
+    color: $deep;
+    height: 28px;
+  }
+  > div {
+    display: flex;
+    padding: 0 12px;
+    align-items: center;
+  }
+  figure {
+    width: 160px;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    background-color: $thin;
+    margin-right: 20px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+  video {
+    width: 160px;
+    height: 100px;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  .st-close {
+    background-color: rgba(0,0,0,0.5);
+  }
+}
+.st-file__button {
+  display: flex;
+  flex-direction: column;
+  button {
+    width: 100px;
+    height: 36px;
+  }
+}
+.st-file__alt {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  margin-left: 20px;
+  > div {
+    width: 100%;
+    &:first-child {
+      margin-bottom: 10px;
+    }
+  }
+}
+.st-add {
+  background-color: $gray;
+  margin-bottom: 10px;
+}
 .st-filebox {
   width: 360px;
   position: relative;
@@ -730,7 +804,7 @@ input[type='checkbox'] {
     display: flex;
     align-items: center;
     border-bottom: #4ecca3 2px solid;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   h4 {
     font-size: 16px;
@@ -738,7 +812,7 @@ input[type='checkbox'] {
     padding: 0 16px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border-bottom: 2px dashed #4ecca3;
   }
   h5 {
@@ -746,7 +820,7 @@ input[type='checkbox'] {
     height: 32px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     font-weight: normal;
     &::before {
       content: "";
@@ -758,7 +832,7 @@ input[type='checkbox'] {
   }
   p {
     padding: 0 16px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   em {
     font-style: normal;

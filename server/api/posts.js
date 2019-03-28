@@ -1,7 +1,9 @@
+import fs from 'fs'
 import { Router } from 'express'
 
 import xss from 'xss'
 import moment from 'moment'
+import multer from 'multer'
 import connection from '../mysqlConnect'
 
 const router = Router()
@@ -51,6 +53,86 @@ router.get('/get_column/:id', (req, res, next) => {
       })
     } else {
       res.json(users)
+    }
+  })
+})
+router.get('/new_columns', (req, res, next) => {
+  const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" LIMIT 3'
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
+const clientThumb = multer.diskStorage({
+  destination: './static/upload/',
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+const upload = multer({
+  storage: clientThumb
+})
+router.post('/fileuploads', upload.single('thumbnail'), function (req, res) {
+  const file = req.body.fileupload
+  const filetype = 'picture'
+  const sendAt = moment().format('YYYY-MM-DD HH:mm:ss')
+  const pathQuery = 'SELECT * FROM date_media WHERE file_path = "' + file + '" LIMIT 1'
+  const postQuery = 'INSERT INTO date_media (file_path, file_type, uploaded_at) VALUES("' + file + '", "' + filetype + '", ' + '"' + sendAt + '")'
+  if (file) {
+    connection.query(pathQuery, function (err, path) {
+      const pathExists = path.length
+      if (pathExists) {
+        res.status(401).json({
+          error: '既にファイルが登録されているかファイル名が同じです。'
+        })
+      } else if (err) {
+        res.redirect(req.get('referer'))
+      } else {
+        connection.query(postQuery, function (err, rows) {
+          if (err) {
+            // eslint-disable-next-line no-console
+            console.log('error')
+          } else {
+            res.redirect(req.get('referer'))
+          }
+        })
+      }
+    })
+  }
+})
+router.post('/media_remove', (req, res, next) => {
+  const getID = xss(req.body.ids)
+  const getURL = `SELECT * FROM date_media WHERE id IN (${getID})`
+  const query = `DELETE FROM date_media WHERE id IN (${getID})`
+  connection.query(getURL, function (err, rows) {
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log('error1')
+    } else {
+      const item = rows
+      connection.query(query, function (err, rows) {
+        if (err) {
+          // eslint-disable-next-line no-console
+          console.log('error2')
+        } else {
+          for (let i = 0; i < item.length; i++) {
+            const element = './static' + item[i].file_path
+            fs.unlink(element, (err) => {
+              if (err) throw err
+              // eslint-disable-next-line no-console
+              console.log('successfully deleted')
+            })
+          }
+          res.redirect(req.get('referer'))
+        }
+      })
     }
   })
 })

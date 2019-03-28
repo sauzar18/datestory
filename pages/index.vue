@@ -17,8 +17,8 @@
                 <article>
                   <div class="st-article__header">
                     <h3 class="text-green">{{ post.title }}</h3>
-                    <p><em>{{ post.location }}</em></p>
-                    <p>{{ post.content | replaceName }}</p>
+                    <p><em class="st-location">{{ post.location }}</em></p>
+                    <p class="st-text">{{ post.content | replaceName }}</p>
                     <div class="st-article__footer">
                       <dl>
                         <dt>投稿者</dt>
@@ -43,9 +43,10 @@
             </li>
           </ul>
         </section>
-        <section class="st-column__right">
-          <h2>新着記事</h2>
-        </section>
+        <new-posts
+          v-if="newposts.toString()"
+          :newpost="newposts"
+        />
         <div
           :class="{ active: isActive }"
           class="st-modal"
@@ -62,6 +63,11 @@
                 :value="$store.state.csrfToken"
                 type="hidden"
                 name="_csrf"
+              >
+              <input
+                value="公開"
+                type="hidden"
+                name="post_status"
               >
               <div class="st-textfield thin full">
                 <input
@@ -137,6 +143,38 @@
                   </dd>
                 </dl>
               </div>
+              <div class="st-filefield light">
+                <label for="ceo_thumbnail">メイン画像<span class="st-small">※新規保存はリロードされます。</span></label>
+                <div>
+                  <input
+                    :value="filepath1"
+                    type="hidden"
+                    name="thumbnail"
+                  >
+                  <figure>
+                    <img
+                      v-if="filepath"
+                      :src="filepath"
+                      alt="#"
+                    >
+                  </figure>
+                  <input
+                    id="ceo_thumbnail"
+                    ref="file"
+                    type="file"
+                    @change="selectedFile"
+                  >
+                  <div class="st-file__button">
+                    <button
+                      class="st-button st-add"
+                      type="button"
+                      @click="addFiles()"
+                    >
+                      参照
+                    </button>
+                  </div>
+                </div>
+              </div>
               <input
                 :value="content"
                 name="post_content"
@@ -192,17 +230,22 @@
             </section>
           </section>
         </div>
-        <div
-          class="st-hidden"
-          @click="isActive = false"
-        />
       </div>
       <nav class="st-post__button">
         <button
+          v-if="isActive === false"
           type="button"
           @click="isActive = true"
         >
           記事を投稿する
+        </button>
+        <button
+          v-else
+          class="st-close"
+          type="button"
+          @click="isActive = false"
+        >
+          投稿画面を閉じる
         </button>
       </nav>
     </main>
@@ -212,11 +255,13 @@
 <script>
 import AppHeader from '~/components/Header.vue'
 import AppFooter from '~/components/Footer.vue'
+import NewPosts from '~/components/NewPosts.vue'
 import moment from 'moment'
 export default {
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    NewPosts
   },
   filters: {
     moment(date) {
@@ -233,8 +278,8 @@ export default {
     return {
       allPost: 0,
       errors: '',
-      title: 'test',
-      description: 'test',
+      title: 'Dates | デートプランの相談・報告・共有サイト',
+      description: 'Datesはデートプランを相談したり良かったことを報告して楽しむサイトです。好きな人とデートをしたいけど、どうやって',
       isActive: false,
       post_title: '',
       post_name: '',
@@ -244,6 +289,8 @@ export default {
       content: '',
       uploadFile: '',
       filepath: '',
+      filepath1: '',
+      media: '',
       process_title01: '',
       customToolbar: [
         [{ 'header': [false, 3, 4, 5, 6, ] }],
@@ -268,8 +315,11 @@ export default {
       page = 1
     }
     const start = 20 * (page - 1)
-    const data = await app.$axios.$get(`/api/post_columns/${start}`)
-    return { posts: data }
+    const [data, data2] = await Promise.all([
+      app.$axios.$get(`/api/post_columns/${start}`),
+      app.$axios.$get('/api/new_columns/')
+    ])
+    return { posts: data, newposts: data2 }
   },
   watchQuery: ['page'],
   head() {
@@ -280,24 +330,51 @@ export default {
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: this.title },
         { property: 'og:description', content: this.description },
-        { property: 'og:url', content: 'https://medee.jp/column' },
-        { property: 'og:image', content: 'https://medee.jp/images/ogp.png' },
+        { property: 'og:url', content: 'https://dates.jp/column' },
+        { property: 'og:image', content: 'https://dates.jp/images/ogp.png' },
         { name: 'twitter:title', content: this.title },
         { name: 'twitter:card', content: 'summary' },
         { name: 'twitter:description', content: this.description },
-        { name: 'twitter:image', content: 'https://medee.jp/images/ogp.png' }
+        { name: 'twitter:image', content: 'https://dates.jp/images/ogp.png' }
       ],
       link: [
-        { rel: 'canonical', href: 'https://medee.jp/column' }
+        { rel: 'canonical', href: 'https://dates.jp/column' }
       ]
     }
   },
   methods: {
+    addFiles () {
+      this.$refs.file.click()
+    },
+    selectedFile (e) {
+      let uploadedFiles = this.$refs.file.files || this.$refs.file.dataTransfer.files
+      this.uploadFile = uploadedFiles[0]
+      const file = e.target.files[0]
+      this.filepath1 = `/upload/${this.uploadFile.name}`
+      this.filepath = window.URL.createObjectURL(file)
+      let formData = new FormData()
+      formData.set('fileupload', this.filepath1)
+      formData.append('thumbnail', this.uploadFile)
+      let config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.csrfToken,
+          'X-CSRF-TOKEN': this.$store.state.csrfToken
+        }
+      }
+      this.$axios.$post('/api/fileuploads', formData, config)
+        .then(function() {
+          console.log('success')
+        })
+        .catch(function(error) {
+          console.log('error')
+        })
+    },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
       const formData = new FormData()
       this.filepath = '/upload/' + file.name
       formData.set('fileupload', this.filepath)
-      formData.append('column_figure', file)
+      formData.append('thumbnail', file)
       const config = {
         headers: {
           'content-type': 'multipart/form-data',
@@ -384,11 +461,13 @@ h2 {
     margin-right: 20px;
     flex-shrink: 0;
     position: relative;
+    display: flex;
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center;
+      background-color: #ddd;
     }
   }
   figcaption {
@@ -419,7 +498,7 @@ h2 {
   }
   em {
     font-style: normal;
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 .st-article__header {
@@ -468,12 +547,12 @@ h2 {
 }
 .st-modal.active {
   overflow: auto;
-  max-height: 100%;
+  max-height: calc(100% - 40px);
   visibility: initial;
   z-index: 2;
-  padding: 20px;
+  padding: 20px 20px 0;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
-  + .st-hidden {
+  + .st-close {
     display: block;
     width: 100%;
     height: 100%;
@@ -523,6 +602,14 @@ h2 {
     display: flex;
     margin-bottom: 8px;
   }
+}
+.st-location {
+  border: 1px solid rgb(148, 148, 148);
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+.st-text {
+  margin: 8px 0 0;
 }
 @media screen and (max-width: 980px) {
   .st-column {

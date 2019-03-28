@@ -49,7 +49,10 @@
             </li>
           </ul>
           <figure>
-            <img src="#" :alt="article.title">
+            <img
+              :src="article.thumbnail"
+              :alt="article.title"
+            >
           </figure>
           <div
             v-html="article.content"

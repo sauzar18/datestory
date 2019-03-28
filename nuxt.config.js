@@ -46,7 +46,15 @@ module.exports = {
    ** Axios module configuration
    */
   axios: {
-    // See https://github.com/nuxt-community/axios-module#options
+    baseURL: 'https://datesplan.appspot.com/',
+    credentials: false,
+    browserBaseURL: process.env.BASE_APP_URL || '/',
+    requestInterceptor: (config, { store }) => {
+      if (store.state.csrfToken) {
+        config.headers.common['x-csrf-token'] = 'Bearer ' + store.state.csrfToken
+      }
+      return config
+    }
   },
 
   /*
