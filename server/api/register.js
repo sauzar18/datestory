@@ -14,6 +14,8 @@ router.post('/register', function (req, res, next) {
   const password = hasher.HashPassword(xss(req.body.password))
   const permission = xss(req.body.permission)
   const createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
+  const emailQuery = `SELECT * FROM date_users WHERE user_mail = "${email}" LIMIT 1`
+  const registerQuery = `INSERT INTO date_users (user_name, user_mail, user_password, permission, create_at) VALUES("${name}", "${email}", "${password}", "${permission}", "${createdAt}")`
   const output = `dates事務局
 
 ${name}様が登録いたしました。
@@ -46,8 +48,6 @@ https://dates.jp/contact
   Email: support@dates.jp
   URL: https://dates.jp
 ----------------------------------------------------------------`
-  const emailQuery = 'SELECT * FROM dates_users WHERE user_login = "' + email + '" LIMIT 1'
-  const registerQuery = 'INSERT INTO dates_users (user_login, user_pass, user_name, permission, create_at) VALUES("' + email + '", ' + '"' + password + '",  ' + '"' + name + '", ' + '"' + permission + '", ' + '"' + createdAt + '")'
   const transporter = nodemailer.createTransport(config.transporter)
 
   const mailOptions = {
@@ -70,8 +70,6 @@ https://dates.jp/contact
       }
       res.status(500)
     } else {
-      // eslint-disable-next-line no-console
-      console.log(info.accepted)
       arrResponse = {
         'status': 'success',
         'data': info.accepted
@@ -98,11 +96,16 @@ https://dates.jp/contact
       // eslint-disable-next-line no-console
       console.log('error')
     } else {
-      // eslint-disable-next-line handle-callback-err
       connection.query(registerQuery, function (err, rows) {
-        res.json({
-          ok: true
-        })
+        if (rows) {
+          res.json({
+            ok: true
+          })
+        } else if (err) {
+          res.json({
+            ok: false
+          })
+        }
       })
     }
   })

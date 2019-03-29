@@ -13,17 +13,6 @@
         <div class="st-form">
           <div class="st-textfield">
             <input
-              id="login"
-              v-model="login"
-              type="text"
-              name="login_id"
-              required
-              aria-required="true"
-            >
-            <label for="login">ログインID<span class="st-required">必須</span></label>
-          </div>
-          <div class="st-textfield">
-            <input
               id="user_name"
               v-model="user_name"
               type="text"
@@ -32,6 +21,17 @@
               aria-required="true"
             >
             <label for="user_name">ユーザー名(ログイン後変更可)</label>
+          </div>
+          <div class="st-textfield">
+            <input
+              id="login"
+              v-model="email"
+              type="text"
+              name="email"
+              required
+              aria-required="true"
+            >
+            <label for="login">メールアドレス(ログインID)<span class="st-required">必須</span></label>
           </div>
           <div class="st-textfield">
             <input
@@ -57,24 +57,18 @@
           class="st-confirm"
         >
           <h3>登録内容確認</h3>
-          <form
-            action="/api/register"
-            method="POST"
-          >
+          {{ formError }}
+          <form @submit.prevent="register">
             <input
               :value="$store.state.csrfToken"
               type="hidden"
               name="_csrf"
             >
-            <div class="st-textfield readonly">
-              <input
-                v-model="login"
-                type="text"
-                name="login_id"
-                readonly
-              >
-              <label for="login">ログインID<span class="st-required">必須</span></label>
-            </div>
+            <input
+              v-model="permission"
+              type="hidden"
+              name="permission"
+            >
             <div class="st-textfield readonly">
               <input
                 v-model="user_name"
@@ -83,6 +77,15 @@
                 readonly
               >
               <label for="user_name">ユーザー名(ログイン後変更可)</label>
+            </div>
+            <div class="st-textfield readonly">
+              <input
+                v-model="email"
+                type="email"
+                name="email"
+                readonly
+              >
+              <label for="login">メールアドレス(ログインID)<span class="st-required">必須</span></label>
             </div>
             <div class="st-textfield readonly">
               <input
@@ -129,10 +132,31 @@ export default {
   },
   data() {
     return {
-      login: '',
+      email: '',
       user_name: '',
       password: '',
-      isConfirm: false
+      permission: 'editor',
+      isConfirm: false,
+      formError: ''
+    }
+  },
+  methods: {
+    async register () {
+      try {
+        await this.$store.dispatch('register', {
+          name: this.user_name,
+          email: this.email,
+          password: this.password,
+          permission: this.permission,
+          _csrf: this.$store.state.csrfToken
+        })
+        setTimeout(() => {
+          location.href = '/register/complete'
+        }, 0.1)
+        this.formError = null
+      } catch (e) {
+        this.formError = e.message
+      }
     }
   }
 }

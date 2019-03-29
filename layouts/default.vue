@@ -798,9 +798,8 @@ input[type='checkbox'] {
   margin: 20px 0;
   h3 {
     font-size: 18px;
-    height: 40px;
     background-color: #efefef;
-    padding: 0 16px;
+    padding: 8px 16px;
     display: flex;
     align-items: center;
     border-bottom: #4ecca3 2px solid;
@@ -808,8 +807,7 @@ input[type='checkbox'] {
   }
   h4 {
     font-size: 16px;
-    height: 40px;
-    padding: 0 16px;
+    padding: 8px 16px;
     display: flex;
     align-items: center;
     margin-bottom: 30px;
@@ -817,9 +815,8 @@ input[type='checkbox'] {
   }
   h5 {
     font-size: 16px;
-    height: 32px;
+    padding: 8px 0;
     display: flex;
-    align-items: center;
     margin-bottom: 30px;
     font-weight: normal;
     &::before {
@@ -827,7 +824,6 @@ input[type='checkbox'] {
       width: 6px;
       background-color: #4ecca3;
       margin-right: 8px;
-      height: 100%;
     }
   }
   p {

@@ -16,7 +16,7 @@ export const mutations = {
   setArticle(state, data) {
     state.article = data
   },
-  setRegister: function (state, data) {
+  setRegister(state, data) {
     state.register = data
   }
 }
@@ -29,7 +29,7 @@ export const actions = {
       commit('SET_CSRF_TOKEN', req.csrfToken())
     }
   },
-  register({ commit }, { userid, name, email, password, permission, _csrf }) {
+  register({ commit }, { name, email, password, permission, _csrf }) {
     return fetch('/api/register', {
       credentials: 'same-origin',
       method: 'POST',
@@ -38,7 +38,7 @@ export const actions = {
         'Authorization': 'Bearer ' + _csrf,
         'X-CSRF-TOKEN': _csrf
       },
-      body: JSON.stringify({ userid, name, email, password, permission, _csrf })
+      body: JSON.stringify({ name, email, password, permission, _csrf })
     })
       .then((res) => {
         if (res.status === 401) {

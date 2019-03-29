@@ -184,6 +184,7 @@
                 <vue-editor
                   id="editor"
                   v-model="content"
+                  useCustomImageHandler
                   @imageAdded="handleImageAdded"
                   :editorToolbar="customToolbar"
                 />
@@ -290,6 +291,7 @@ export default {
       uploadFile: '',
       filepath: '',
       filepath1: '',
+      filepath2: '',
       media: '',
       process_title01: '',
       customToolbar: [
@@ -372,8 +374,8 @@ export default {
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
       const formData = new FormData()
-      this.filepath = '/upload/' + file.name
-      formData.set('fileupload', this.filepath)
+      this.filepath2 = '/upload/' + file.name
+      formData.set('fileupload', this.filepath2)
       formData.append('thumbnail', file)
       const config = {
         headers: {

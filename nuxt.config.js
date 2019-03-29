@@ -1,7 +1,5 @@
-// eslint-disable-next-line nuxt/no-cjs-in-config
+/* eslint-disable nuxt/no-cjs-in-config */
 const pkg = require('./package')
-
-// eslint-disable-next-line nuxt/no-cjs-in-config
 module.exports = {
   mode: 'universal',
 
@@ -46,12 +44,13 @@ module.exports = {
    ** Axios module configuration
    */
   axios: {
-    baseURL: 'https://datesplan.appspot.com/',
+    // baseURL: 'https://datesplan.appspot.com/',
     credentials: false,
     browserBaseURL: process.env.BASE_APP_URL || '/',
     requestInterceptor: (config, { store }) => {
       if (store.state.csrfToken) {
-        config.headers.common['x-csrf-token'] = 'Bearer ' + store.state.csrfToken
+        config.headers.common.Authorization = 'Bearer ' + store.state.csrfToken
+        config.headers.common['x-csrf-token'] = store.state.csrfToken
       }
       return config
     }
