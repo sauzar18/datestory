@@ -26,9 +26,40 @@ router.post('/posts', (req, res, next) => {
     }
   })
 })
+router.post('/answers', (req, res, next) => {
+  const id = xss(req.body.consult_id)
+  const parent = xss(req.body.parent_id)
+  const content = xss(req.body.answer)
+  const author = xss(req.body.author)
+  const createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
+  const postQuery = `INSERT INTO date_comments (consult_id, parent_id, author, answer, posted_at) VALUES('${id}', '${parent}', '${author}', '${content}', '${createdAt}')`
+  connection.query(postQuery, function (err, rows) {
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.log(err)
+    } else {
+      res.redirect(req.get('referer'))
+    }
+  })
+})
+router.get('/get_answers/:id', (req, res, next) => {
+  const slugQuery = req.params.id
+  const clientQuery = `SELECT * FROM date_comments WHERE consult_id = "${slugQuery}"`
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
 router.get('/post_columns/:offset', (req, res, next) => {
   const slugQuery = req.params.offset
-  const clientQuery = `SELECT * FROM date_posts LIMIT 20 OFFSET ${slugQuery}`
+  const clientQuery = `SELECT * FROM date_posts WHERE category = "みてみて" LIMIT 20 OFFSET ${slugQuery}`
   connection.query(clientQuery, function (err, rows) {
     const users = rows
     if (err) {
@@ -56,8 +87,8 @@ router.get('/get_column/:id', (req, res, next) => {
     }
   })
 })
-router.get('/new_columns', (req, res, next) => {
-  const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" LIMIT 3'
+router.get('/consults', (req, res, next) => {
+  const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" AND category = "相談"'
   connection.query(clientQuery, function (err, rows) {
     const users = rows
     if (err) {
@@ -79,7 +110,7 @@ const clientThumb = multer.diskStorage({
 const upload = multer({
   storage: clientThumb
 })
-router.post('/fileuploads', upload.single('thumbnail'), function (req, res) {
+router.post('/file_uploads', upload.single('thumbnail'), function (req, res) {
   const file = req.body.fileupload
   const filetype = 'picture'
   const sendAt = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -98,7 +129,7 @@ router.post('/fileuploads', upload.single('thumbnail'), function (req, res) {
         connection.query(postQuery, function (err, rows) {
           if (err) {
             // eslint-disable-next-line no-console
-            console.log('error')
+            console.log(err)
           } else {
             res.redirect(req.get('referer'))
           }
@@ -114,13 +145,13 @@ router.post('/media_remove', (req, res, next) => {
   connection.query(getURL, function (err, rows) {
     if (err) {
       // eslint-disable-next-line no-console
-      console.log('error1')
+      console.log(err)
     } else {
       const item = rows
       connection.query(query, function (err, rows) {
         if (err) {
           // eslint-disable-next-line no-console
-          console.log('error2')
+          console.log(err)
         } else {
           for (let i = 0; i < item.length; i++) {
             const element = './static' + item[i].file_path

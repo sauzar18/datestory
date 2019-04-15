@@ -15,7 +15,7 @@ router.post('/register', function (req, res, next) {
   const permission = xss(req.body.permission)
   const createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
   const emailQuery = `SELECT * FROM date_users WHERE user_mail = "${email}" LIMIT 1`
-  const registerQuery = `INSERT INTO date_users (user_name, user_mail, user_password, permission, create_at) VALUES("${name}", "${email}", "${password}", "${permission}", "${createdAt}")`
+  const registerQuery = `INSERT INTO date_users (user_name, user_mail, user_password, permission, created_at) VALUES("${name}", "${email}", "${password}", "${permission}", "${createdAt}")`
   const output = `dates事務局
 
 ${name}様が登録いたしました。
@@ -94,7 +94,7 @@ https://dates.jp/contact
       })
     } else if (err) {
       // eslint-disable-next-line no-console
-      console.log('error')
+      console.log(err)
     } else {
       connection.query(registerQuery, function (err, rows) {
         if (rows) {
@@ -102,6 +102,7 @@ https://dates.jp/contact
             ok: true
           })
         } else if (err) {
+          console.log(err)
           res.json({
             ok: false
           })
