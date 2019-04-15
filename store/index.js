@@ -18,6 +18,9 @@ export const mutations = {
   },
   setRegister(state, data) {
     state.register = data
+  },
+  SET_USER(state, user) {
+    state.authUser = user
   }
 }
 export const actions = {
@@ -85,7 +88,6 @@ export const actions = {
     })
       .then(() => {
         commit('SET_USER', null)
-        commit('SET_LOGIN', null)
       })
   }
 }
