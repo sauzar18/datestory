@@ -4,7 +4,7 @@
     <main>
       <div class="st-column">
         <section class="st-column__left">
-          <h2>記事一覧</h2>
+          <h2>デート一覧</h2>
           <ul>
             <li
               v-for="post in posts"
@@ -43,10 +43,7 @@
             </li>
           </ul>
         </section>
-        <new-posts
-          v-if="newposts.toString()"
-          :newpost="newposts"
-        />
+        <consults　:consult="consult"/>
         <div
           :class="{ active: isActive }"
           class="st-modal"
@@ -256,13 +253,13 @@
 <script>
 import AppHeader from '~/components/Header.vue'
 import AppFooter from '~/components/Footer.vue'
-import NewPosts from '~/components/NewPosts.vue'
+import Consults from '~/components/Consults.vue'
 import moment from 'moment'
 export default {
   components: {
     AppHeader,
     AppFooter,
-    NewPosts
+    Consults
   },
   filters: {
     moment(date) {
@@ -319,9 +316,9 @@ export default {
     const start = 20 * (page - 1)
     const [data, data2] = await Promise.all([
       app.$axios.$get(`/api/post_columns/${start}`),
-      app.$axios.$get('/api/new_columns/')
+      app.$axios.$get('/api/consults/')
     ])
-    return { posts: data, newposts: data2 }
+    return { posts: data, consult: data2 }
   },
   watchQuery: ['page'],
   head() {
@@ -364,7 +361,7 @@ export default {
           'X-CSRF-TOKEN': this.$store.state.csrfToken
         }
       }
-      this.$axios.$post('/api/fileuploads', formData, config)
+      this.$axios.$post('/api/file_uploads', formData, config)
         .then(function() {
           console.log('success')
         })
@@ -373,18 +370,18 @@ export default {
         })
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
-      const formData = new FormData()
+      let formData = new FormData()
       this.filepath2 = '/upload/' + file.name
       formData.set('fileupload', this.filepath2)
       formData.append('thumbnail', file)
-      const config = {
+      let config = {
         headers: {
           'content-type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.csrfToken,
           'X-CSRF-TOKEN': this.$store.state.csrfToken
         }
       }
-      this.$axios.$post('/api/admin_fileupload_column', formData, config)
+      this.$axios.$post('/api/file_uploads', formData, config)
         .then((result) => {
           Editor.insertEmbed(cursorLocation, 'image', this.filepath2)
           Editor.formatText(cursorLocation, cursorLocation + 1, 'alt', 'コラム画像')
