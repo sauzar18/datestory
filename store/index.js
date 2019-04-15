@@ -50,5 +50,42 @@ export const actions = {
       .then((register) => {
         commit('setRegister', register)
       })
+  },
+  login({ commit }, { usermail, password, _csrf }) {
+    return fetch('/api/login', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + _csrf,
+        'X-CSRF-TOKEN': _csrf
+      },
+      body: JSON.stringify({ usermail, password, _csrf })
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          throw new Error('ログイン失敗')
+        } else {
+          return res.json()
+        }
+      })
+      .then((authUser) => {
+        commit('SET_USER', authUser)
+      })
+  },
+  logout({ commit }, { _csrf }) {
+    return fetch('/api/logout', {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + _csrf,
+        'X-CSRF-TOKEN': _csrf
+      }
+    })
+      .then(() => {
+        commit('SET_USER', null)
+        commit('SET_LOGIN', null)
+      })
   }
 }

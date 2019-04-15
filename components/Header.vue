@@ -3,7 +3,7 @@
     <div class="st-inner">
       <h1>dates</h1>
       <nav>
-        <ul>
+        <ul v-if="!$store.state.authUser">
           <li>
             <n-link to="/register">新規登録</n-link>
           </li>
@@ -11,10 +11,38 @@
             <n-link to="/login">ログイン</n-link>
           </li>
         </ul>
+        <ul v-else>
+          <li>
+            <n-link to="/mypage">マイページ</n-link>
+          </li>
+          <li class="st-login">
+            <button
+              type="button"
+              @click="logout"
+            >
+              ログアウト
+            </button>
+          </li>
+        </ul>
       </nav>
     </div>
   </header>
 </template>
+<script>
+export default {
+  methods: {
+    async logout() {
+      try {
+        await this.$store.dispatch('logout', {
+          _csrf: this.$store.state.csrfToken
+        }).then(() => this.$router.go('/'))
+      } catch (e) {
+        this.formError = e.message
+      }
+    }
+  }
+}
+</script>
 <style lang="scss" scoped>
 .st-inner {
   width: 80%;
