@@ -896,4 +896,124 @@ input[type='checkbox'] {
     }
   }
 }
+.st-admin__control {
+  width: calc(100% - 240px);
+  padding: 20px;
+  margin-left: auto;
+  h2 {
+    border-bottom: #3db38b 2px solid;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+}
+.st-newbutton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  background-color: #4ECCA3;
+  color: #fff;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  &:hover {
+    background-color: #60d8b0;
+  }
+}
+.st-admin__posts {
+  display: flex;
+  justify-content: space-between;
+}
+.st-admin__posts_left {
+  width: 68%;
+  > dl {
+    > dt {
+      border-bottom: 1px dashed #005792;
+      margin-bottom: 10px;
+    }
+  }
+}
+.st-admin__posts_right {
+  width: 30%;
+  h3 {
+    font-size: 16px;
+  }
+}
+.st-admin__release {
+  width: 100%;
+  border-radius: 2px;
+  background-color: #fafafa;
+  margin-bottom: 20px;
+  z-index: 2;
+  position: sticky;
+  top: 60px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+}
+.st-release__title {
+  border-bottom: 1px solid #005792;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  button {
+    width: 90px;
+    height: 30px;
+  }
+}
+.st-release__box {
+  padding: 10px;
+  button {
+    width: 80px;
+    height: 36px;
+    margin-top: 10px;
+  }
+  dd {
+    display: flex;
+  }
+  label {
+    margin-right: 20px;
+  }
+}
+.st-preview {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  background-color: #F2F7FF;
+  z-index: 2;
+  transition: 0.2s all;
+  width: calc(100% - 240px);
+  height: calc(100vh - 60px);
+  overflow: auto;
+  padding: 0 20px 20px;
+  transform: translateX(100%);
+}
+.st-preview.active {
+  transform: translateX(0);
+}
+.st-preview__title {
+  border-bottom: #005792 2px solid;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 4px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-top: 20px;
+  background-color: #F2F7FF;
+  h2 {
+    font-size: 18px;
+  }
+  button {
+    width: 90px;
+    height: 30px;
+    background-color: #3e3939;
+    color: #fff;
+    &:hover,
+    &:focus {
+      background-color: #7A7878;
+    }
+  }
+}
 </style>
