@@ -56,7 +56,7 @@
       </div>
       <section class="st-answer">
         <h2>回答一覧</h2>
-        <ul>
+        <ul v-if="answers.toString()">
           <li
             v-for="(answer ,i) in answers"
             :key="i"
@@ -67,6 +67,7 @@
             </dl>
           </li>
         </ul>
+        <p v-else>現在回答はありません</p>
       </section>
       <section
         :class="{ active: isAnswer }"

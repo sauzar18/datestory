@@ -141,7 +141,7 @@
                 </dl>
               </div>
               <div class="st-filefield light">
-                <label for="ceo_thumbnail">メイン画像<span class="st-small">※新規保存はリロードされます。</span></label>
+                <label for="ceo_thumbnail">メイン画像</label>
                 <div>
                   <input
                     :value="filepath1"
@@ -221,6 +221,12 @@
                   {{ post_category }}
                 </li>
               </ul>
+              <figure v-if="filepath">
+                <img
+                  :src="filepath"
+                  :alt="post_title"
+                >
+              </figure>
               <div
                 v-html="content"
                 class="st-article__content"
