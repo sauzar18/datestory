@@ -70,4 +70,12 @@ a {
     text-decoration: underline;
   }
 }
+.st-login {
+  button {
+    background-color: transparent;
+    &:hover {
+      text-decoration: underline
+    }
+  }
+}
 </style>

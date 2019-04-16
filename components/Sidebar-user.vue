@@ -13,12 +13,12 @@
         </nuxt-link>
       </li>
       <li>
-        <nuxt-link to="/list">
+        <nuxt-link to="/mypage/list">
           記事一覧
         </nuxt-link>
       </li>
       <li>
-        <nuxt-link to="/favorite">
+        <nuxt-link to="/mypage/favorite">
           お気に入り一覧
         </nuxt-link>
       </li>
