@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import moment from 'moment'
+import consola from 'consola'
 import nodemailer from 'nodemailer'
 import xss from 'xss'
 import hasher from 'wordpress-hash-node'
@@ -75,13 +76,8 @@ https://dates.jp/contact
         'data': info.accepted
       }
       transporter.sendMail(autoSend, (error, info) => {
-        if (error) {
-          // eslint-disable-next-line no-console
-          console.log('error')
-        } else {
-          // eslint-disable-next-line no-console
-          console.log(info.accepted)
-        }
+        if (error) consola.ready(error)
+        else consola.ready(info.accepted)
       })
     }
     res.end()
@@ -93,8 +89,7 @@ https://dates.jp/contact
         error: '既にメールアドレスが登録されています'
       })
     } else if (err) {
-      // eslint-disable-next-line no-console
-      console.log(err)
+      consola.ready(err)
     } else {
       connection.query(registerQuery, function (err, rows) {
         if (rows) {
@@ -102,7 +97,7 @@ https://dates.jp/contact
             ok: true
           })
         } else if (err) {
-          console.log(err)
+          consola.ready(err)
           res.json({
             ok: false
           })

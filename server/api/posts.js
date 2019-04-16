@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { Router } from 'express'
-
+import consola from 'consola'
 import xss from 'xss'
 import moment from 'moment'
 import multer from 'multer'
@@ -8,6 +8,7 @@ import connection from '../mysqlConnect'
 
 const router = Router()
 router.post('/posts', (req, res, next) => {
+  const userId = xss(req.session.authUser.userid)
   const title = xss(req.body.post_title)
   const content = xss(req.body.post_content)
   const postName = xss(req.body.post_name)
@@ -16,11 +17,10 @@ router.post('/posts', (req, res, next) => {
   const thumbnail = xss(req.body.thumbnail)
   const Type = xss(req.body.post_status)
   const createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
-  const postQuery = `INSERT INTO date_posts (title, author, content, location, category, thumbnail, post_status, post_date) VALUES('${title}', '${postName}', '${content}', '${location}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`
+  const postQuery = `INSERT INTO date_posts (user_id, title, author, content, location, category, thumbnail, post_status, post_date) VALUES('${userId}', '${title}', '${postName}', '${content}', '${location}', '${category}', '${thumbnail}', '${Type}', '${createdAt}')`
   connection.query(postQuery, function (err, rows) {
     if (err) {
-      // eslint-disable-next-line no-console
-      console.log('error')
+      consola.ready(err)
     } else {
       res.redirect(req.get('referer'))
     }
@@ -35,8 +35,7 @@ router.post('/answers', (req, res, next) => {
   const postQuery = `INSERT INTO date_comments (consult_id, parent_id, author, answer, posted_at) VALUES('${id}', '${parent}', '${author}', '${content}', '${createdAt}')`
   connection.query(postQuery, function (err, rows) {
     if (err) {
-      // eslint-disable-next-line no-console
-      console.log(err)
+      consola.ready(err)
     } else {
       res.redirect(req.get('referer'))
     }
@@ -87,6 +86,21 @@ router.get('/get_column/:id', (req, res, next) => {
     }
   })
 })
+router.get('/get_user_columns/:id', (req, res, next) => {
+  const slugQuery = req.params.id
+  const clientQuery = `SELECT * FROM date_posts WHERE user_id = "${slugQuery}"`
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
 router.get('/consults', (req, res, next) => {
   const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" AND category = "相談"'
   connection.query(clientQuery, function (err, rows) {
@@ -115,7 +129,7 @@ router.post('/file_uploads', upload.single('thumbnail'), function (req, res) {
   const filetype = 'picture'
   const sendAt = moment().format('YYYY-MM-DD HH:mm:ss')
   const pathQuery = 'SELECT * FROM date_media WHERE file_path = "' + file + '" LIMIT 1'
-  const postQuery = 'INSERT INTO date_media (file_path, file_type, uploaded_at) VALUES("' + file + '", "' + filetype + '", ' + '"' + sendAt + '")'
+  const postQuery = `INSERT INTO date_media (file_path, file_type, uploaded_at) VALUES("${file}", "${filetype}", "${sendAt}")`
   if (file) {
     connection.query(pathQuery, function (err, path) {
       const pathExists = path.length
@@ -128,8 +142,7 @@ router.post('/file_uploads', upload.single('thumbnail'), function (req, res) {
       } else {
         connection.query(postQuery, function (err, rows) {
           if (err) {
-            // eslint-disable-next-line no-console
-            console.log(err)
+            consola.ready(err)
           } else {
             res.redirect(req.get('referer'))
           }
@@ -144,21 +157,18 @@ router.post('/media_remove', (req, res, next) => {
   const query = `DELETE FROM date_media WHERE id IN (${getID})`
   connection.query(getURL, function (err, rows) {
     if (err) {
-      // eslint-disable-next-line no-console
-      console.log(err)
+      consola.ready(err)
     } else {
       const item = rows
       connection.query(query, function (err, rows) {
         if (err) {
-          // eslint-disable-next-line no-console
-          console.log(err)
+          consola.ready(err)
         } else {
           for (let i = 0; i < item.length; i++) {
             const element = './static' + item[i].file_path
             fs.unlink(element, (err) => {
               if (err) throw err
-              // eslint-disable-next-line no-console
-              console.log('successfully deleted')
+              consola.ready('successfully deleted')
             })
           }
           res.redirect(req.get('referer'))
