@@ -1,7 +1,7 @@
 <template>
   <section class="st-newpost__list">
     <h2>デート相談一覧</h2>
-    <ul v-if="consults">
+    <ul v-if="consults.toString()">
       <li
         v-for="(item, i) in consults"
         :key="i"
@@ -63,7 +63,7 @@ footer {
   color: rgb(148, 148, 148);
 }
 .st-newpost__list {
-  width: 320px;
+  width: 300px;
   h3 {
     font-size: 16px;
     padding: 0 12px;
@@ -140,6 +140,11 @@ footer {
   header {
     display: flex;
     flex-direction: column;
+  }
+}
+@media screen and (max-width: 980px) {
+  .st-newpost__list {
+    width: 100%;
   }
 }
 </style>

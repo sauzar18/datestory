@@ -1,7 +1,9 @@
 <template>
   <header>
     <div class="st-inner">
-      <h1>dates</h1>
+      <h1>
+        <nuxt-link to="/">dates</nuxt-link>
+      </h1>
       <nav>
         <ul v-if="!$store.state.authUser">
           <li>
@@ -45,7 +47,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .st-inner {
-  width: 80%;
   margin: 0 auto;
   max-width: 980px;
   height: 60px;
@@ -76,6 +77,11 @@ a {
     &:hover {
       text-decoration: underline
     }
+  }
+}
+@media screen and (max-width: 980px) {
+  .st-inner {
+    width: 90%;
   }
 }
 </style>

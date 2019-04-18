@@ -1,5 +1,5 @@
 <template>
-  <footer class="deep">
+  <footer class="st-footer deep">
     <div class="inner">
       <h2><n-link to="/">dates</n-link></h2>
       <nav>
@@ -34,6 +34,11 @@ li {
   margin-right: 20px;
   &:last-child {
     margin-right: 0;
+  }
+}
+@media screen and (max-width: 980px) {
+  .inner {
+    width: 90%;
   }
 }
 </style>
