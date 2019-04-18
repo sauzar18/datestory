@@ -102,7 +102,53 @@ router.get('/get_user_columns/:id', (req, res, next) => {
   })
 })
 router.get('/consults', (req, res, next) => {
-  const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" AND category = "相談"'
+  const clientQuery = 'SELECT * FROM date_posts WHERE post_status = "公開" AND category = "相談" ORDER BY id DESC LIMIT 6'
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
+router.get('/consults/:id', (req, res, next) => {
+  const id = req.params.id
+  const clientQuery = `SELECT * FROM date_posts WHERE post_status = "公開" AND category = "相談" AND id NOT IN ('${id}') ORDER BY id DESC LIMIT 6`
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
+router.get('/newposts', (req, res, next) => {
+  const type = '相談'
+  const clientQuery = `SELECT * FROM date_posts WHERE post_status = "公開" AND category NOT IN ('${type}') ORDER BY id DESC LIMIT 3`
+  connection.query(clientQuery, function (err, rows) {
+    const users = rows
+    if (err) {
+      res.json({
+        Error: true,
+        Message: 'Error executing MySQL query'
+      })
+    } else {
+      res.json(users)
+    }
+  })
+})
+router.get('/newposts/:id', (req, res, next) => {
+  const id = req.params.id
+  const type = '相談'
+  const clientQuery = `SELECT * FROM date_posts WHERE post_status = "公開" AND category NOT IN ('${type}') AND id NOT IN ('${id}') ORDER BY id DESC LIMIT 3`
   connection.query(clientQuery, function (err, rows) {
     const users = rows
     if (err) {
