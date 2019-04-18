@@ -17,7 +17,7 @@
                 <article>
                   <div class="st-article__header">
                     <h3 class="text-green">{{ post.title }}</h3>
-                    <p><em class="st-location">{{ post.location }}</em></p>
+                    <p><em class="st-location">{{ post.location }}</em><em class="st-category">{{ post.category }}</em></p>
                     <p class="st-text">{{ post.content | replaceName }}</p>
                     <div class="st-article__footer">
                       <dl>
@@ -43,7 +43,7 @@
             </li>
           </ul>
         </section>
-        <consults　:consult="consult"/>
+        <consults :consult="consult"/>
         <div
           :class="{ active: isActive }"
           class="st-modal"
@@ -438,7 +438,7 @@ h2 {
   }
 }
 .st-column__left {
-  width: 620px;
+  width: 640px;
   li {
     margin-bottom: 10px;
   }
@@ -616,6 +616,12 @@ h2 {
 .st-text {
   margin: 8px 0 0;
 }
+.st-footer {
+  margin-bottom: 40px;
+}
+.st-category {
+  display: none;
+}
 @media screen and (max-width: 980px) {
   .st-column {
     width: 90%;
@@ -637,29 +643,27 @@ h2 {
       position: relative;
     }
     figure {
-      width: auto;
-      margin-right: 0;
-      display: inline-flex;
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      z-index: 2;
-      img {
-        display: none;
-      }
-    }
-    figcaption {
-      position: static;
+      display: none;
     }
     h3 {
       font-size: 4.26666vw;
     }
-    time {
+    time,
+    em {
       font-size: 3.2vw;
     }
   }
   .st-column__left {
     margin-bottom: 5.3333vw;
+  }
+  .st-category {
+    display: inline;
+    font-size: 3.2vw;
+    border: 1px solid #949494;
+    color: #949494;
+    padding: 2px 4px;
+    margin-left: 1.8vw;
+    border-radius: 5px;
   }
 }
 </style>

@@ -10,7 +10,7 @@
             </n-link>
           </li>
           <li>
-            <n-link to="/posts">
+            <n-link to="/">
               投稿一覧
             </n-link>
           </li>
@@ -59,16 +59,48 @@
             class="st-article__content"
           />
         </article>
+        <div class="st-right">
+          <new-posts
+            :newpost="newposts"
+            class="st-bottom"
+          />
+          <consults :consult="consult" />
+          <div class="st-share">
+            <a
+              :href="'http://www.facebook.com/sharer.php?u=https://dates.jp/posts/' + article.id + '&ptitle=' + article.title"
+              class="st-button large-button st-facebook"
+              target="_blank"
+              rel="noopener"
+            >
+              Facebookでシェア
+            </a>
+            <a
+              :href="'http://twitter.com/share?text=' + article.title + '&url=https://dates.jp/posts/' + article.id"
+              class="st-button large-button st-twitter"
+              target="_blank"
+              rel="noopener"
+            >
+              Twitterでシェア
+            </a>
+          </div>
+        </div>
       </div>
     </main>
+    <app-footer />
   </div>
 </template>
 <script>
 import AppHeader from '~/components/Header.vue'
+import AppFooter from '~/components/Footer.vue'
+import Consults from '~/components/Consults.vue'
+import NewPosts from '~/components/NewPosts.vue'
 import moment from 'moment'
 export default {
   components: {
-    AppHeader
+    AppHeader,
+    AppFooter,
+    Consults,
+    NewPosts
   },
   filters: {
     moment(date) {
@@ -82,9 +114,13 @@ export default {
     }
   },
   async asyncData({ app, store, params, context }) {
-    const data = await app.$axios.$get(`/api/get_column/${params.id}`)
+    const [data, data2, data3] = await Promise.all([
+      app.$axios.$get(`/api/get_column/${params.id}`),
+      app.$axios.$get(`/api/newposts/${params.id}`),
+      app.$axios.$get('/api/consults/')
+    ])
     store.commit('setArticle', data[0])
-    return { test: data }
+    return { newposts: data2, consult: data3 }
   },
   computed: {
     article() {
@@ -96,8 +132,11 @@ export default {
 <style lang="scss" scoped>
 $blue: #4ecca3;
 $deep: #232931;
+.st-bottom {
+  margin-bottom: 40px;
+}
 .st-column {
-  width: 720px;
+  width: 640px;
   figure {
     display: flex;
     width: 100%;
@@ -145,9 +184,36 @@ h2 {
 }
 .st-article__box {
   width: 980px;
-  margin: 0 auto;
+  margin: 0 auto 60px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+.st-share {
+  margin: 40px 0;
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: 2px;
+  }
+}
+.st-facebook {
+  background-color: #3b5998;
+  color: #fff;
+  margin-bottom: 10px;
+  &:hover,
+  &:focus {
+    background-color: #496DB9;
+  }
+}
+.st-twitter {
+  background-color: #00aced;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background-color: #04b4f4;
+  }
 }
 </style>

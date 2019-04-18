@@ -20,55 +20,58 @@
         </ol>
       </nav>
       <div class="st-article__box">
-        <article class="st-column">
-          <h2 class="title">
-            {{ article.title }}
-          </h2>
-          <div class="st-post__author">
-            <dl v-if="article.author">
-              <dt>投稿者:</dt>
-              <dd>{{ article.author }}</dd>
-            </dl>
-            <dl
-              v-if="article.post_date"
-              class="time"
+        <div class="st-article__left">
+          <article class="st-column">
+            <h2 class="title">
+              {{ article.title }}
+            </h2>
+            <div class="st-post__author">
+              <dl v-if="article.author">
+                <dt>投稿者:</dt>
+                <dd>{{ article.author }}</dd>
+              </dl>
+              <dl
+                v-if="article.post_date"
+                class="time"
+              >
+                <dt>投稿日:</dt>
+                <dd>{{ article.post_date | moment }}</dd>
+              </dl>
+            </div>
+            <ul
+              v-if="article.location || article.category"
+              class="category"
             >
-              <dt>投稿日:</dt>
-              <dd>{{ article.post_date | moment }}</dd>
-            </dl>
-          </div>
-          <ul
-            v-if="article.location || article.category"
-            class="category"
-          >
-            <li v-if="article.location">
-              {{ article.location }}
-            </li>
-            <li v-if="article.category">
-              {{ article.category }}
-            </li>
-          </ul>
-          <div
-            v-html="article.content"
-            class="st-article__content"
-          />
-        </article>
+              <li v-if="article.location">
+                {{ article.location }}
+              </li>
+              <li v-if="article.category">
+                {{ article.category }}
+              </li>
+            </ul>
+            <div
+              v-html="article.content"
+              class="st-article__content"
+            />
+          </article>
+          <section class="st-answer">
+            <h2>回答一覧</h2>
+            <ul v-if="answers.toString()">
+              <li
+                v-for="(answer ,i) in answers"
+                :key="i"
+              >
+                <dl>
+                  <dt>by {{ answer.author }}</dt>
+                  <dd>{{ answer.answer}}</dd>
+                </dl>
+              </li>
+            </ul>
+            <p v-else>現在回答はありません</p>
+          </section>
+        </div>
+        <consults :consult="consult" />
       </div>
-      <section class="st-answer">
-        <h2>回答一覧</h2>
-        <ul v-if="answers.toString()">
-          <li
-            v-for="(answer ,i) in answers"
-            :key="i"
-          >
-            <dl>
-              <dt>by {{ answer.author }}</dt>
-              <dd>{{ answer.answer}}</dd>
-            </dl>
-          </li>
-        </ul>
-        <p v-else>現在回答はありません</p>
-      </section>
       <section
         :class="{ active: isAnswer }"
         class="st-answerbox"
@@ -136,10 +139,12 @@
 </template>
 <script>
 import AppHeader from '~/components/Header.vue'
+import Consults from '~/components/Consults.vue'
 import moment from 'moment'
 export default {
   components: {
-    AppHeader
+    AppHeader,
+    Consults
   },
   filters: {
     moment(date) {
@@ -153,12 +158,13 @@ export default {
     }
   },
   async asyncData({ app, store, params, context }) {
-    const [data, data2] = await Promise.all([
+    const [data, data2, data3] = await Promise.all([
       app.$axios.$get(`/api/get_column/${params.id}`),
-      app.$axios.$get(`/api/get_answers/${params.id}`)
+      app.$axios.$get(`/api/get_answers/${params.id}`),
+      app.$axios.$get(`/api/consults/${params.id}`)
     ])
     store.commit('setArticle', data[0])
-    return { consultId: params.id, answers: data2 }
+    return { consultId: params.id, answers: data2, consult: data3 }
   },
   data () {
     return {
@@ -175,8 +181,10 @@ export default {
 <style lang="scss" scoped>
 $blue: #4ecca3;
 $deep: #232931;
+.st-article__left {
+  width: 640px;
+}
 .st-column {
-  width: 720px;
   figure {
     display: flex;
     width: 100%;
@@ -226,14 +234,13 @@ h2 {
   }
 }
 .st-article__box {
-  width: 980px;
   margin: 0 auto;
+  width: 980px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 .st-answer {
-  width: 980px;
   margin: 40px auto;
   h2 {
     background-color: #ddd;
