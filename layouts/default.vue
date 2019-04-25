@@ -55,6 +55,9 @@ button {
 .gray {
   background-color: $gray;
 }
+.green {
+  background-color: $blue;
+}
 a.deep,
 button.deep {
   &:hover,
@@ -67,6 +70,14 @@ button.gray {
   &:hover,
   &:focus {
     background-color: #d4d8d8;
+  }
+}
+a.green,
+button.green {
+  color: #fff;
+  &:hover,
+  &:focus {
+    background-color: #37bf91;
   }
 }
 @keyframes onAutoFillStart { from {} to {}}
@@ -1014,6 +1025,11 @@ input[type='checkbox'] {
     &:focus {
       background-color: #7A7878;
     }
+  }
+}
+@media screen and (max-width: 980px) {
+  .st-bread {
+    width: 90%;
   }
 }
 </style>
