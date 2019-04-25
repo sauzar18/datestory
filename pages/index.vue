@@ -360,7 +360,7 @@ export default {
       let formData = new FormData()
       formData.set('fileupload', this.filepath1)
       formData.append('thumbnail', this.uploadFile)
-      let config = {
+      const config = {
         headers: {
           'content-type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.csrfToken,
@@ -372,7 +372,7 @@ export default {
           console.log('success')
         })
         .catch(function(error) {
-          console.log('error')
+          console.log(error)
         })
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
@@ -380,7 +380,7 @@ export default {
       this.filepath2 = '/upload/' + file.name
       formData.set('fileupload', this.filepath2)
       formData.append('thumbnail', file)
-      let config = {
+      const config = {
         headers: {
           'content-type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.csrfToken,
@@ -622,6 +622,11 @@ h2 {
 .st-category {
   display: none;
 }
+.st-modal__left {
+  form {
+    margin-bottom: 40px; 
+  }
+}
 @media screen and (max-width: 980px) {
   .st-column {
     width: 90%;
@@ -632,7 +637,7 @@ h2 {
     margin-bottom: 40px;
   }
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 680px) {
   .st-column {
     margin: 5.3333vw auto;
   }

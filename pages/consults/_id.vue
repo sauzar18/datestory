@@ -58,16 +58,100 @@
             <h2>回答一覧</h2>
             <ul v-if="answers.toString()">
               <li
-                v-for="(answer ,i) in answers"
+                v-for="(answer ,i) in parentComment"
                 :key="i"
               >
-                <dl>
-                  <dt>by {{ answer.author }}</dt>
-                  <dd>{{ answer.answer}}</dd>
-                </dl>
+                <div class="st-parent__comment">
+                  <dl>
+                    <dt>by {{ answer.author }}</dt>
+                    <dd>{{ answer.answer}}</dd>
+                  </dl>
+                  <button
+                    type="button"
+                    @click="isComment(answer.id)"
+                  >
+                    コメントする
+                  </button>
+                </div>
+                <ul class="st-child__comment">
+                  <li
+                    v-for="(comment, i) in childComment(answer.id)"
+                    :key="i"
+                  >
+                    <dl>
+                      <dt>by {{ comment.author }}</dt>
+                      <dd>{{ comment.answer}}</dd>
+                    </dl>
+                  </li>
+                </ul>
               </li>
             </ul>
             <p v-else>現在回答はありません</p>
+            <section
+              :class="{ active: isActive }"
+              class="st-modal__comment"
+            >
+              <div class="title">
+                <h3>コメントを投稿する</h3>
+                <button
+                  type="button"
+                  class="st-close"
+                  @click="isActive = false"
+                >
+                  <i>
+                    <img
+                      src="~static/images/ic_close.svg"
+                      alt="閉じる"
+                    >
+                  </i>
+                </button>
+              </div>
+              <form
+                action="/api/answers"
+                method="POST"
+              >
+                <input
+                  :value="$store.state.csrfToken"
+                  type="hidden"
+                  name="_csrf"
+                >
+                <input
+                  :value="consultId"
+                  type="hidden"
+                  name="consult_id"
+                >
+                <input
+                  :value="id"
+                  type="hidden"
+                  name="parent_id"
+                >
+                <div class="st-textfield">
+                  <input
+                    id="author2"
+                    v-model="author2"
+                    type="text"
+                    name="author"
+                  >
+                  <label for="author2">投稿者名</label>
+                </div>
+                <div class="st-textfield area">
+                  <textarea
+                    id="comment"
+                    v-model="comment"
+                    name="answer"
+                    cols="30"
+                    rows="10"
+                  />
+                  <label for="comment">コメント</label>
+                </div>
+                <button
+                  type="submit"
+                  class="green"
+                >
+                  投稿
+                </button>
+              </form>
+            </section>
           </section>
         </div>
         <consults :consult="consult" />
@@ -78,7 +162,10 @@
       >
         <div>
           <h2>回答をする</h2>
-          <form action="/api/answers" method="POST">
+          <form
+            action="/api/answers"
+            method="POST"
+          >
             <input
               :value="$store.state.csrfToken"
               type="hidden"
@@ -168,12 +255,43 @@ export default {
   },
   data () {
     return {
-      isAnswer: false
+      isAnswer: false,
+      isActive: false,
+      id: '',
+      comment: '',
+      author: '',
+      author2: ''
     }
   },
   computed: {
     article() {
       return this.$store.state.article
+    },
+    parentComment() {
+      let list = this.answers
+      list = list.filter(function (row) {
+        if (row['parent_id'] !== 0) {
+          return false
+        }
+        return row
+      })
+      return list
+    }
+  },
+  methods: {
+    isComment(id) {
+      this.id = id
+      this.isActive = true
+    },
+    childComment(id) {
+      let list = this.answers
+      list = list.filter(function (row) {
+        if (row['parent_id'] !== id) {
+          return false
+        }
+        return row
+      })
+      return list
     }
   }
 }
@@ -234,7 +352,7 @@ h2 {
   }
 }
 .st-article__box {
-  margin: 0 auto;
+  margin: 0 auto 60px;
   width: 980px;
   display: flex;
   justify-content: space-between;
@@ -242,25 +360,61 @@ h2 {
 }
 .st-answer {
   margin: 40px auto;
+  position: relative;
   h2 {
     background-color: #ddd;
     padding: 6px 16px;
     border-radius: 5px 5px 0 0;
     font-size: 18px;
   }
-  li {
-    margin-bottom: 10px;
-  }
   dl {
     display: flex;
-    border: #4ecca3 1px solid;
-    padding: 10px;
-    border-radius: 5px;
+    position: relative;
+    width: 100%;
+  }
+  dt {
+    position: absolute;
+    top: -18px;
+    flex-shrink: 0;
+    font-size: 12px;
+    background-color: #fff;
+    line-height: 1;
   }
   dd {
-    order: -1;
     margin-right: 10px;
   }
+}
+.st-parent__comment {
+  border: #4ecca3 1px solid;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  button {
+    background-color: transparent;
+    font-size: 12px;
+    color: #4ecca3;
+    font-weight: bold;
+    flex-shrink: 0;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+.st-child__comment {
+  width: 96%;
+  margin-left: auto;
+  li {
+    border: #4ecca3 1px solid;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+  }
+  
 }
 .st-answerbox {
   position: fixed;
@@ -318,12 +472,67 @@ h2 {
     }
   }
 }
+.st-modal__comment {
+  padding: 0 20px;
+  width: 90%;
+  margin-left: auto;
+  border-radius: 5px;
+  max-height: 0;
+  overflow: hidden;
+  visibility: visible;
+  transition: 0.2s all;
+  position: relative;
+  .title {
+    border-bottom: 1px solid #37bf91;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    h3 {
+      font-size: 16px;
+    }
+  }
+  .st-textfield {
+    background-color: #effff9;
+  }
+  button {
+    width: 120px;
+    height: 40px;
+  }
+  button.st-close {
+    width: 24px;
+    height: 24px;
+    background-color: transparent;
+    margin-bottom: 8px;
+    i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+  }
+}
+.st-modal__comment.active {
+  border: 1px solid #37bf91;
+  padding: 20px;
+  max-height: 400px;
+  overflow: auto;
+  visibility: initial;
+}
 @media screen and (max-width: 980px) {
   .st-article__box {
     width: 90%;
+    flex-direction: column;
   }
   .st-column {
     width: 100%;
   }
+  .st-article__left {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 680px) {
+  
+
 }
 </style>
