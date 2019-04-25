@@ -8,7 +8,8 @@ import connection from '../mysqlConnect'
 
 const router = Router()
 router.post('/posts', (req, res, next) => {
-  const userId = xss(req.session.authUser.userid)
+  let userId = xss(req.session.authUser.userid)
+  if (!req.session.authUser) userId = 0
   const title = xss(req.body.post_title)
   const content = xss(req.body.post_content)
   const postName = xss(req.body.post_name)
@@ -41,6 +42,7 @@ router.post('/answers', (req, res, next) => {
     }
   })
 })
+
 router.get('/get_answers/:id', (req, res, next) => {
   const slugQuery = req.params.id
   const clientQuery = `SELECT * FROM date_comments WHERE consult_id = "${slugQuery}"`
@@ -56,6 +58,7 @@ router.get('/get_answers/:id', (req, res, next) => {
     }
   })
 })
+
 router.get('/post_columns/:offset', (req, res, next) => {
   const slugQuery = req.params.offset
   const clientQuery = `SELECT * FROM date_posts WHERE category = "みてみて" LIMIT 20 OFFSET ${slugQuery}`
@@ -174,7 +177,7 @@ router.post('/file_uploads', upload.single('thumbnail'), function (req, res) {
   const file = req.body.fileupload
   const filetype = 'picture'
   const sendAt = moment().format('YYYY-MM-DD HH:mm:ss')
-  const pathQuery = 'SELECT * FROM date_media WHERE file_path = "' + file + '" LIMIT 1'
+  const pathQuery = `SELECT * FROM date_media WHERE file_path = '${file}' LIMIT 1`
   const postQuery = `INSERT INTO date_media (file_path, file_type, uploaded_at) VALUES("${file}", "${filetype}", "${sendAt}")`
   if (file) {
     connection.query(pathQuery, function (err, path) {
@@ -187,11 +190,8 @@ router.post('/file_uploads', upload.single('thumbnail'), function (req, res) {
         res.redirect(req.get('referer'))
       } else {
         connection.query(postQuery, function (err, rows) {
-          if (err) {
-            consola.ready(err)
-          } else {
-            res.redirect(req.get('referer'))
-          }
+          if (err) consola.error(err)
+          else res.redirect(req.get('referer'))
         })
       }
     })
@@ -203,12 +203,12 @@ router.post('/media_remove', (req, res, next) => {
   const query = `DELETE FROM date_media WHERE id IN (${getID})`
   connection.query(getURL, function (err, rows) {
     if (err) {
-      consola.ready(err)
+      consola.error(err)
     } else {
       const item = rows
       connection.query(query, function (err, rows) {
         if (err) {
-          consola.ready(err)
+          consola.error(err)
         } else {
           for (let i = 0; i < item.length; i++) {
             const element = './static' + item[i].file_path
