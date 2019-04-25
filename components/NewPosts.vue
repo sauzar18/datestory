@@ -69,7 +69,7 @@ footer {
   color: rgb(148, 148, 148);
 }
 .st-newpost__list {
-  width: 320px;
+  width: 300px;
   h3 {
     font-size: 16px;
     padding: 0 12px;
@@ -81,7 +81,6 @@ footer {
     font-size: 14px;
   }
   ul {
-    padding: 20px;
     background-color: #fff;
   }
   video {
